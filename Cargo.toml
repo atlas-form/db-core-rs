@@ -1,0 +1,19 @@
+[package]
+name = "db-core-rs"
+version = "0.1.0"
+edition = "2024"
+description = "SeaORM-based database core utilities and repository abstractions"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/ancient/db-core-rs"
+readme = "README.md"
+keywords = ["sea-orm", "database", "repository"]
+categories = ["database"]
+
+[dependencies]
+sea-orm = { version = "2.0.0-rc", features = ["sqlx-postgres", "sqlx-mysql", "sqlx-sqlite", "runtime-tokio-rustls", "macros", "with-time"] }
+tokio = { version = "1", features = ["full"] }
+thiserror = "2.0"
+tracing = "0.1.44"
+serde = { version = "1.0", features = ["derive"] }
+validator = { version = "0.20", features = ["derive"] }
+async-trait = "0.1"
