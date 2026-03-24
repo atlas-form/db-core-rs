@@ -1,16 +1,13 @@
 mod config;
-mod error;
+pub mod error;
 mod manager;
 
 pub mod query;
 pub mod repository;
 
-// Re-export core utilities
-// pg-tables/src/db.rs
 use std::sync::Arc;
 
 pub use config::DatabaseConfig;
-pub use error::{Error, ErrorKind, Result};
 pub use manager::DatabaseManager;
 pub use query::{OrderBy, PaginatedResponse, PaginationParams};
 pub use repository::{Repository, base::BaseRepository};

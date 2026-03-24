@@ -1,78 +1,34 @@
-use thiserror::Error;
+use super::base::Error;
 
-/// Business logic and application-level errors
-#[derive(Error, Debug)]
-pub enum BusinessError {
-    /// Permission denied
-    #[error("Permission denied: {0}")]
-    PermissionDenied(String),
+const INTERNAL_ERROR: i16 = -1;
 
-    /// Invalid input
-    #[error("Invalid input: {0}")]
-    InvalidInput(String),
-
-    /// Business rule violation
-    #[error("Business error: {0}")]
-    RuleViolation(String),
-
-    /// Configuration error
-    #[error("Configuration error: {0}")]
-    Config(String),
-
-    /// Internal error
-    #[error("Internal error: {0}")]
-    Internal(String),
-
-    /// Serialization error
-    #[error("Serialization error: {0}")]
-    Serialization(String),
+#[derive(Debug)]
+pub struct BizError {
+    code: i16,
+    message: String,
 }
 
-impl BusinessError {
-    /// Create a permission denied error
-    pub fn permission_denied(message: impl Into<String>) -> Self {
-        Self::PermissionDenied(message.into())
+pub type BizResult<T> = std::result::Result<T, BizError>;
+
+impl BizError {
+    pub fn new(code: i16, message: String) -> Self {
+        Self { code, message }
     }
 
-    /// Create an invalid input error
-    pub fn invalid_input(message: impl Into<String>) -> Self {
-        Self::InvalidInput(message.into())
+    pub fn code(&self) -> i16 {
+        self.code
     }
 
-    /// Create a business rule violation error
-    pub fn rule_violation(message: impl Into<String>) -> Self {
-        Self::RuleViolation(message.into())
-    }
-
-    /// Create a config error
-    pub fn config(message: impl Into<String>) -> Self {
-        Self::Config(message.into())
-    }
-
-    /// Create an internal error
-    pub fn internal(message: impl Into<String>) -> Self {
-        Self::Internal(message.into())
-    }
-
-    /// Create a serialization error
-    pub fn serialization(message: impl Into<String>) -> Self {
-        Self::Serialization(message.into())
+    pub fn message(&self) -> &str {
+        &self.message
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_permission_denied() {
-        let err = BusinessError::permission_denied("Access denied");
-        assert_eq!(err.to_string(), "Permission denied: Access denied");
-    }
-
-    #[test]
-    fn test_business_rule() {
-        let err = BusinessError::rule_violation("Insufficient balance");
-        assert_eq!(err.to_string(), "Business error: Insufficient balance");
+impl From<Error> for BizError {
+    fn from(value: Error) -> Self {
+        Self {
+            code: INTERNAL_ERROR,
+            message: value.to_string(),
+        }
     }
 }

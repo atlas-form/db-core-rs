@@ -18,8 +18,8 @@ impl DatabaseManager {
     /// Create a new DatabaseManager with the given configurations
     pub async fn new(configs: Vec<DatabaseConfig>) -> Result<Self> {
         if configs.is_empty() {
-            return Err(Error::config(
-                "At least one database configuration is required",
+            return Err(Error::Custom(
+                "At least one database configuration is required".to_owned(),
             ));
         }
 
@@ -36,7 +36,7 @@ impl DatabaseManager {
                 .sqlx_logging(config.sql_logging);
 
             let db = Database::connect(opt).await.map_err(|e| {
-                Error::internal(format!("Connection failed for {}: {}", config.name, e))
+                Error::Custom(format!("Connection failed for {}: {}", config.name, e))
             })?;
 
             let ctx = conn_to_context(db);
@@ -53,7 +53,7 @@ impl DatabaseManager {
         self.connections
             .get(name)
             .cloned()
-            .ok_or_else(|| Error::not_found("Database", name))
+            .ok_or_else(|| Error::Custom(format!("Database not found: {}", name)))
     }
 
     /// Get the default database connection (first one added)
@@ -79,50 +79,7 @@ impl DatabaseManager {
     pub fn count(&self) -> usize {
         self.connections.len()
     }
-
-    // /// Close all database connections
-    // pub async fn close_all(&mut self) -> Result<()> {
-    //     info!("Closing all database connections");
-
-    //     for (name, conn) in self.connections.drain() {
-    //         if let Err(e) = conn.inner().clone().close().await {
-    //             warn!("Error closing database connection '{}': {}", name, e);
-    //         } else {
-    //             debug!("Closed database connection: {}", name);
-    //         }
-    //     }
-
-    //     Ok(())
-    // }
-
-    // /// Close a specific database connection
-    // pub async fn close(&mut self, name: &str) -> Result<()> {
-    //     if let Some(conn) = self.connections.remove(name) {
-    //         info!("Closing database connection: {}", name);
-    //         conn.inner()
-    //             .clone()
-    //             .close()
-    //             .await
-    //             .map_err(|e| PgError::internal(format!("Failed to close '{}': {}", name, e)))?;
-    //         debug!("Closed database connection: {}", name);
-    //         Ok(())
-    //     } else {
-    //         Err(PgError::not_found("Database", name))
-    //     }
-    // }
 }
-
-// impl Drop for DatabaseManager {
-//     fn drop(&mut self) {
-//         if !self.connections.is_empty() {
-//             warn!(
-//                 "DatabaseManager dropped with {} active connections. Consider calling close_all()
-// \                  explicitly.",
-//                 self.connections.len()
-//             );
-//         }
-//     }
-// }
 
 fn conn_to_context(conn: DatabaseConnection) -> DbContext {
     DbContext::new(Arc::new(conn))
