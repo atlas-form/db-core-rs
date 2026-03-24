@@ -1,6 +1,6 @@
 use super::base::Error;
 
-const INTERNAL_ERROR: i16 = -1;
+pub const BIZ_INTERNAL_ERROR: i16 = -1;
 
 #[derive(Debug)]
 pub struct BizError {
@@ -27,7 +27,7 @@ impl BizError {
 impl From<Error> for BizError {
     fn from(value: Error) -> Self {
         Self {
-            code: INTERNAL_ERROR,
+            code: BIZ_INTERNAL_ERROR,
             message: value.to_string(),
         }
     }

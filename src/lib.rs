@@ -13,7 +13,7 @@ pub use query::{OrderBy, PaginatedResponse, PaginationParams};
 pub use repository::{Repository, base::BaseRepository};
 use sea_orm::DatabaseConnection;
 
-/// pg-tables 对外暴露的数据库上下文
+/// tables 对外暴露的数据库上下文
 ///
 /// 约定：
 /// - 外部 crate 只能“拿着它用”
