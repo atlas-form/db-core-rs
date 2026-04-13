@@ -11,6 +11,10 @@ pub enum Error {
     /// Custom error with a message
     #[error("{0}")]
     Custom(String),
+
+    /// Transaction-related error
+    #[error("transaction error: {0}")]
+    Transaction(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

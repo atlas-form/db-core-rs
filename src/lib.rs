@@ -1,37 +1,16 @@
 mod config;
+mod context;
 pub mod error;
 mod manager;
 
 pub mod query;
 pub mod repository;
 
-use std::sync::Arc;
-
 pub use config::DatabaseConfig;
+pub use context::{DbContext, DbTransaction};
 pub use manager::DatabaseManager;
 pub use query::{OrderBy, PaginatedResponse, PaginationParams};
 pub use repository::{Repository, base::BaseRepository};
-use sea_orm::DatabaseConnection;
-
-/// tables 对外暴露的数据库上下文
-///
-/// 约定：
-/// - 外部 crate 只能“拿着它用”
-/// - 不能依赖 SeaORM
-#[derive(Clone)]
-pub struct DbContext {
-    inner: Arc<DatabaseConnection>,
-}
-
-impl DbContext {
-    pub(crate) fn new(db: Arc<DatabaseConnection>) -> Self {
-        Self { inner: db }
-    }
-
-    pub(crate) fn inner(&self) -> &DatabaseConnection {
-        &self.inner
-    }
-}
 
 #[cfg(test)]
 mod tests {
